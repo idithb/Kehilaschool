@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
-import { DAYS, TIME_SLOTS } from '../constants';
-import type { Course, Day, TimeSlot } from '../types';
+import { DAYS, TIME_SLOTS, GRADE_LEVELS } from '../constants';
+import type { Course, Day, TimeSlot, GradeLevel } from '../types';
 
 interface CourseFormModalProps {
     course: Course | null;
@@ -13,6 +14,8 @@ export const CourseFormModal: React.FC<CourseFormModalProps> = ({ course, onClos
     const [details, setDetails] = useState('');
     const [day, setDay] = useState<Day>('ראשון');
     const [timeSlot, setTimeSlot] = useState<TimeSlot>('שעה 1');
+    const [gradeLevel, setGradeLevel] = useState<GradeLevel>('ג-ד');
+
 
     useEffect(() => {
         if (course) {
@@ -20,6 +23,7 @@ export const CourseFormModal: React.FC<CourseFormModalProps> = ({ course, onClos
             setDetails(course.details);
             setDay(course.day);
             setTimeSlot(course.timeSlot);
+            setGradeLevel(course.gradeLevel);
         }
     }, [course]);
 
@@ -31,6 +35,7 @@ export const CourseFormModal: React.FC<CourseFormModalProps> = ({ course, onClos
             details,
             day,
             timeSlot,
+            gradeLevel,
         });
     };
     
@@ -80,6 +85,12 @@ export const CourseFormModal: React.FC<CourseFormModalProps> = ({ course, onClos
                                 {TIME_SLOTS.map(s => <option key={s} value={s}>{s}</option>)}
                            </select>
                         </div>
+                    </div>
+                     <div>
+                        <label htmlFor="course-grade" className="block text-sm font-medium text-gray-700 mb-1">שכבה</label>
+                        <select id="course-grade" value={gradeLevel} onChange={e => setGradeLevel(e.target.value as GradeLevel)} className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            {GRADE_LEVELS.map(g => <option key={g} value={g}>{g}</option>)}
+                        </select>
                     </div>
                     <div className="flex justify-end gap-3 pt-4">
                          <button type="button" onClick={onClose} className="bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-md hover:bg-gray-300 transition-colors">ביטול</button>

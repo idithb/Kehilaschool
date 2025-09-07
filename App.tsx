@@ -1,6 +1,7 @@
+
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { INITIAL_COURSES, ADMIN_PASSWORD } from './constants';
-import type { Course, Day, TimeSlot } from './types';
+import type { Course, Day, TimeSlot, GradeLevel } from './types';
 import { FilterControls } from './components/FilterControls';
 import { ScheduleGrid } from './components/ScheduleGrid';
 import { MyScheduleView } from './components/MyScheduleView';
@@ -12,7 +13,9 @@ const App: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [dayFilter, setDayFilter] = useState<Day | 'הכל'>('הכל');
   const [timeFilter, setTimeFilter] = useState<TimeSlot | 'הכל'>('הכל');
+  const [gradeFilter, setGradeFilter] = useState<GradeLevel | 'הכל'>('הכל');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [studentName, setStudentName] = useState<string>('');
   const [selectedCourseIds, setSelectedCourseIds] = useState<Set<number>>(new Set());
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
@@ -36,6 +39,12 @@ const App: React.FC = () => {
       setCourses(INITIAL_COURSES);
     }
 
+    // Load student name from localStorage
+    const savedName = localStorage.getItem('studentName');
+    if (savedName) {
+        setStudentName(savedName);
+    }
+
     // Load selected courses from URL for sharing
     const searchParams = new URLSearchParams(window.location.search);
     const selectedIdsFromUrl = searchParams.get('selected');
@@ -46,6 +55,11 @@ const App: React.FC = () => {
       setSelectedCourseIds(new Set(ids));
     }
   }, []);
+
+  // Save student name to localStorage
+  useEffect(() => {
+    localStorage.setItem('studentName', studentName);
+  }, [studentName]);
 
   // Update URL when selection changes
   useEffect(() => {
@@ -106,9 +120,9 @@ const App: React.FC = () => {
 
   const handleSaveCourse = (courseData: Omit<Course, 'id'> & { id?: number }) => {
     if (courseData.id) { // Editing existing course
-      setCourses(prev => prev.map(c => c.id === courseData.id ? { ...c, ...courseData } : c));
+      setCourses(prev => prev.map(c => c.id === courseData.id ? { ...courseData } as Course : c));
     } else { // Adding new course
-      const newCourse = { ...courseData, id: Date.now() };
+      const newCourse = { ...courseData, id: Date.now() } as Course;
       setCourses(prev => [...prev, newCourse]);
     }
     setShowCourseFormModal(false);
@@ -125,12 +139,13 @@ const App: React.FC = () => {
     return courses.filter(course => {
       const dayMatch = dayFilter === 'הכל' || course.day === dayFilter;
       const timeMatch = timeFilter === 'הכל' || course.timeSlot === timeFilter;
+      const gradeMatch = gradeFilter === 'הכל' || course.gradeLevel === gradeFilter;
       const searchMatch = searchQuery === '' ||
         course.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         course.details.toLowerCase().includes(searchQuery.toLowerCase());
-      return dayMatch && timeMatch && searchMatch;
+      return dayMatch && timeMatch && searchMatch && gradeMatch;
     });
-  }, [dayFilter, timeFilter, searchQuery, courses]);
+  }, [dayFilter, timeFilter, gradeFilter, searchQuery, courses]);
 
   const selectedCourses = useMemo(() => {
     return courses.filter(course => selectedCourseIds.has(course.id));
@@ -165,8 +180,12 @@ const App: React.FC = () => {
           setDayFilter={setDayFilter}
           timeFilter={timeFilter}
           setTimeFilter={setTimeFilter}
+          gradeFilter={gradeFilter}
+          setGradeFilter={setGradeFilter}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
+          studentName={studentName}
+          setStudentName={setStudentName}
           onShowMySchedule={() => setIsModalOpen(true)}
           hasSelection={selectedCourseIds.size > 0}
         />
@@ -185,6 +204,7 @@ const App: React.FC = () => {
         <MyScheduleView
           selectedCourses={selectedCourses}
           onClose={() => setIsModalOpen(false)}
+          studentName={studentName}
         />
       )}
 

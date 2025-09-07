@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { TIME_SLOTS_MAP, DAYS } from '../constants';
 import type { Course } from '../types';
@@ -5,6 +6,7 @@ import type { Course } from '../types';
 interface MyScheduleViewProps {
   selectedCourses: Course[];
   onClose: () => void;
+  studentName: string;
 }
 
 const ShareIcon = () => (
@@ -13,7 +15,7 @@ const ShareIcon = () => (
     </svg>
 );
 
-export const MyScheduleView: React.FC<MyScheduleViewProps> = ({ selectedCourses, onClose }) => {
+export const MyScheduleView: React.FC<MyScheduleViewProps> = ({ selectedCourses, onClose, studentName }) => {
   const [copyButtonText, setCopyButtonText] = useState('העתק קישור');
 
   const groupedCourses = DAYS.reduce((acc, day) => {
@@ -38,6 +40,8 @@ export const MyScheduleView: React.FC<MyScheduleViewProps> = ({ selectedCourses,
     });
   };
 
+  const title = studentName ? `המערכת של ${studentName}` : 'המערכת שלי';
+
   return (
     <div
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
@@ -49,7 +53,7 @@ export const MyScheduleView: React.FC<MyScheduleViewProps> = ({ selectedCourses,
       >
         <div className="flex-shrink-0 p-6 pb-0">
           <div className="flex justify-between items-center border-b pb-3 mb-4">
-            <h2 className="text-3xl font-bold text-blue-700">המערכת שלי</h2>
+            <h2 className="text-3xl font-bold text-blue-700">{title}</h2>
             <button
               onClick={onClose}
               className="text-gray-500 hover:text-gray-800 transition-colors"

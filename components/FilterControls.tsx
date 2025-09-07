@@ -1,15 +1,19 @@
 
 import React from 'react';
-import { DAYS, TIME_SLOTS } from '../constants';
-import type { Day, TimeSlot } from '../types';
+import { DAYS, TIME_SLOTS, GRADE_LEVELS } from '../constants';
+import type { Day, TimeSlot, GradeLevel } from '../types';
 
 interface FilterControlsProps {
   dayFilter: Day | 'הכל';
   setDayFilter: (day: Day | 'הכל') => void;
   timeFilter: TimeSlot | 'הכל';
   setTimeFilter: (time: TimeSlot | 'הכל') => void;
+  gradeFilter: GradeLevel | 'הכל';
+  setGradeFilter: (grade: GradeLevel | 'הכל') => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
+  studentName: string;
+  setStudentName: (name: string) => void;
   onShowMySchedule: () => void;
   hasSelection: boolean;
 }
@@ -19,14 +23,38 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
   setDayFilter,
   timeFilter,
   setTimeFilter,
+  gradeFilter,
+  setGradeFilter,
   searchQuery,
   setSearchQuery,
+  studentName,
+  setStudentName,
   onShowMySchedule,
   hasSelection,
 }) => {
   return (
     <div className="bg-white p-4 rounded-lg shadow-md mb-6 sticky top-4 z-10">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* Grade Filter */}
+        <div>
+          <label htmlFor="grade-filter" className="block text-sm font-medium text-gray-700 mb-1">
+            סינון לפי שכבה
+          </label>
+          <select
+            id="grade-filter"
+            value={gradeFilter}
+            onChange={(e) => setGradeFilter(e.target.value as GradeLevel | 'הכל')}
+            className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="הכל">כל השכבות</option>
+            {GRADE_LEVELS.map((grade) => (
+              <option key={grade} value={grade}>
+                שכבת {grade}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {/* Day Filter */}
         <div>
           <label htmlFor="day-filter" className="block text-sm font-medium text-gray-700 mb-1">
@@ -66,9 +94,9 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
             ))}
           </select>
         </div>
-
+        
         {/* Search Input */}
-        <div>
+        <div className="lg:col-span-1">
           <label htmlFor="search-filter" className="block text-sm font-medium text-gray-700 mb-1">
             חיפוש שיעור
           </label>
@@ -78,6 +106,21 @@ export const FilterControls: React.FC<FilterControlsProps> = ({
             placeholder="שם שיעור, מורה..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+        
+        {/* Student Name */}
+        <div className="lg:col-span-1">
+          <label htmlFor="student-name" className="block text-sm font-medium text-gray-700 mb-1">
+            שם התלמיד/ה
+          </label>
+          <input
+            id="student-name"
+            type="text"
+            placeholder="הקלד/י את שמך..."
+            value={studentName}
+            onChange={(e) => setStudentName(e.target.value)}
             className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
