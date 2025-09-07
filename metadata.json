@@ -1,0 +1,5 @@
+{
+  "name": "School Schedule Planner",
+  "description": "An interactive web application to view, filter, and create a personalized school schedule based on a provided timetable image. Users can select courses and generate their custom weekly plan.",
+  "requestFramePermissions": []
+}
